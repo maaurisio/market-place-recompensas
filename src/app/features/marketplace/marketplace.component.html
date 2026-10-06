@@ -1,0 +1,194 @@
+<div class="min-h-screen bg-slate-50">
+  <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3">
+        <span
+          class="grid h-10 w-10 place-items-center rounded-xl bg-indigo-600 text-lg font-black text-white shadow-lg shadow-indigo-600/30"
+        >
+          ★
+        </span>
+        <div class="leading-tight">
+          <p class="text-sm font-black tracking-tight text-slate-900">CLUB DE PUNTOS</p>
+          <p class="text-xs text-slate-500">Marketplace de Recompensas</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="hidden text-xs font-semibold uppercase tracking-wide text-slate-400 sm:inline">
+          Saldo disponible
+        </span>
+        <span
+          class="rounded-full bg-indigo-50 px-3 py-1.5 text-sm font-black text-indigo-700 ring-1 ring-inset ring-indigo-100"
+        >
+          {{ disponibles() | number: '1.0-0' }} pts
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 p-6 text-white shadow-xl shadow-indigo-900/20 sm:p-8">
+      <div class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl"></div>
+
+      <div class="relative flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.2em] text-indigo-200">Estado de cuenta</p>
+          <h1 class="mt-1 text-2xl font-black tracking-tight sm:text-3xl">
+            ¡Bienvenido de nuevo, Socio!
+          </h1>
+        </div>
+        <button
+          type="button"
+          (click)="cargarDatos()"
+          class="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-white ring-1 ring-inset ring-white/20 transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          Actualizar saldos
+        </button>
+      </div>
+
+      <div class="relative mt-6 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl bg-white/10 p-4 ring-1 ring-inset ring-white/15 backdrop-blur">
+          <p class="text-[11px] font-bold uppercase tracking-wide text-indigo-200">Puntos ganados</p>
+          <p class="mt-1 text-3xl font-black tabular-nums">
+            {{ (saldos()?.puntosGanados ?? 0) | number: '1.0-0' }}
+          </p>
+          <p class="mt-1 text-xs text-indigo-100/80">Histórico acumulado</p>
+        </div>
+
+        <div class="rounded-2xl bg-white p-4 text-slate-900 shadow-lg shadow-slate-900/10">
+          <p class="text-[11px] font-bold uppercase tracking-wide text-indigo-600">Disponibles</p>
+          <p class="mt-1 text-3xl font-black tabular-nums">
+            {{ (saldos()?.puntosDisponibles ?? 0) | number: '1.0-0' }}
+          </p>
+          <p class="mt-1 text-xs text-slate-500">Listos para canjear</p>
+        </div>
+
+        <div class="rounded-2xl bg-white/10 p-4 ring-1 ring-inset ring-white/15 backdrop-blur">
+          <p class="text-[11px] font-bold uppercase tracking-wide text-indigo-200">Congelados</p>
+          <p class="mt-1 text-3xl font-black tabular-nums">
+            {{ (saldos()?.puntosCongelados ?? 0) | number: '1.0-0' }}
+          </p>
+          <p class="mt-1 text-xs text-indigo-100/80">Canjes en tránsito</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-10">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-black tracking-tight text-slate-900">Catálogo de premios</h2>
+          <p class="text-sm text-slate-500">Canjea tus puntos por pasajes, gift cards y más.</p>
+        </div>
+        @if (!cargando() && !errorCarga()) {
+          <span class="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-500 ring-1 ring-slate-200">
+            {{ premios().length }} premios disponibles
+          </span>
+        }
+      </div>
+
+      @if (cargando()) {
+        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          @for (slot of [1, 2, 3, 4, 5, 6, 7, 8]; track slot) {
+            <div class="animate-pulse overflow-hidden rounded-2xl border border-slate-200 bg-white">
+              <div class="aspect-[16/10] bg-slate-200"></div>
+              <div class="space-y-3 p-4">
+                <div class="h-4 w-3/4 rounded bg-slate-200"></div>
+                <div class="h-3 w-full rounded bg-slate-200"></div>
+                <div class="h-8 w-full rounded bg-slate-200"></div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (errorCarga()) {
+        <div class="mt-6 rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center">
+          <p class="font-bold text-rose-700">Ups, algo salió mal</p>
+          <p class="mt-1 text-sm text-rose-600">{{ errorCarga() }}</p>
+          <button
+            type="button"
+            (click)="cargarDatos()"
+            class="mt-4 rounded-full bg-rose-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+          >
+            Reintentar
+          </button>
+        </div>
+      } @else {
+        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          @for (premio of premios(); track premio.id) {
+            <article
+              class="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+            >
+              <div class="relative aspect-[16/10] overflow-hidden bg-slate-100">
+                <img
+                  [src]="premio.imagen"
+                  [alt]="premio.titulo"
+                  loading="lazy"
+                  class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+                <span
+                  class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-slate-700 backdrop-blur"
+                >
+                  {{ premio.categoria }}
+                </span>
+              </div>
+
+              <div class="flex flex-1 flex-col gap-3 p-4">
+                <div>
+                  <h3 class="text-base font-bold leading-snug text-slate-900">{{ premio.titulo }}</h3>
+                  <p class="mt-1 text-sm text-slate-500">{{ premio.descripcion }}</p>
+                </div>
+
+                <div class="mt-auto flex items-end justify-between gap-3 border-t border-slate-100 pt-3">
+                  <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Costo</p>
+                    <p class="text-xl font-black tabular-nums text-indigo-600">
+                      {{ premio.costo | number: '1.0-0' }}
+                      <span class="text-xs font-bold text-slate-400">pts</span>
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    (click)="canjear(premio)"
+                    [disabled]="!alcanzanPuntos(premio) || estaProcesando(premio)"
+                    [class]="claseBoton(premio)"
+                  >
+                    @if (estaProcesando(premio)) {
+                      Procesando…
+                    } @else if (!alcanzanPuntos(premio)) {
+                      No alcanza
+                    } @else {
+                      Canjear
+                    }
+                  </button>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </main>
+
+  @if (toast(); as notificacion) {
+    <div
+      class="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex justify-center sm:inset-x-auto sm:right-6"
+      role="status"
+      aria-live="polite"
+    >
+      <div [class]="claseToast(notificacion)">
+        <span class="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/20 text-sm font-black">
+          {{ notificacion.tipo === 'exito' ? '✓' : '!' }}
+        </span>
+        <p class="flex-1 text-sm font-semibold leading-snug">{{ notificacion.mensaje }}</p>
+        <button
+          type="button"
+          (click)="cerrarToast()"
+          aria-label="Cerrar notificación"
+          class="rounded-lg px-2 py-1 text-xs font-bold opacity-80 transition hover:bg-white/15 hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  }
+</div>
